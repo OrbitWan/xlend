@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" data-build="bc31ad92f">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://gwan-ssl.wandevs.org:56891 https://orbitwan.io; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://gwan-ssl.wandevs.org:56891" crossorigin>
+<title>OrbitWan xLend</title>
+<meta name="description" content="Fixed-term loans between two people on Wanchain.">
+<script src="shared/theme.js?v=4b7e182b"></script>
+<link rel="icon" href="shared/icon.svg?v=0e46d894" type="image/svg+xml">
+<link rel="stylesheet" href="shared/style.css?v=f65888a4">
+<link rel="stylesheet" href="lend.css?v=c153a0df">
+</head>
+<body>
+<header class="hdr">
+  <div class="hdrin">
+    <a class="brand" href="https://orbitwan.io"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#2D7FF9"/><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><circle cx="50" cy="50" r="18" fill="#2D7FF9"/></svg>OrbitWan<span>xLend</span></a>
+    <div class="acctw"><button class="chip" id="acct" type="button" hidden aria-haspopup="menu" aria-expanded="false"></button><div class="menu" id="menu" role="menu" hidden><button class="mi" id="disc" type="button" role="menuitem">Disconnect</button></div></div>
+    <button class="tog" id="tog" type="button"><span class="tl">Dark</span><span class="td">Light</span></button>
+  </div>
+</header>
+<main>
+<p class="note bad" id="netnote" role="status" hidden></p>
+<div class="cards">
+  <section class="card" id="lendcard">
+    <h1>Lend</h1>
+    <p class="sub">Post an offer</p>
+
+    <label class="lbl" for="lamt">You lend</label>
+    <div class="box"><input id="lamt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><select class="toksel" id="ltok" aria-label="Loan token"></select></div>
+    <div class="under"><span id="lbalrow" hidden>Balance <b id="lbal"></b></span><button class="max" id="lmax" type="button" hidden>MAX</button></div>
+    <p class="usd" id="lusd"></p>
+
+    <label class="lbl" for="camt">Collateral</label>
+    <div class="box"><input id="camt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><select class="toksel" id="ctok" aria-label="Collateral token"></select></div>
+    <p class="usd" id="cusd"></p>
+
+    <label class="lbl gap" for="rate">APR</label>
+    <div class="box"><input id="rate" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><span class="tok">%</span></div>
+
+    <span class="lbl gap">Term</span>
+    <div class="seg" id="term" role="group" aria-label="Term">
+      <button type="button" data-term="0" aria-pressed="true"><b>30</b><span>days</span></button>
+      <button type="button" data-term="1" aria-pressed="false"><b>60</b><span>days</span></button>
+      <button type="button" data-term="2" aria-pressed="false"><b>90</b><span>days</span></button>
+      <button type="button" data-term="3" aria-pressed="false"><b>180</b><span>days</span></button>
+      <button type="button" data-term="4" aria-pressed="false"><b>365</b><span>days</span></button>
+    </div>
+
+    <div class="facts">
+      <div><span>Collateral</span><span id="coll"></span></div>
+      <div><span>APR</span><span id="apr"></span></div>
+      <div><span>Interest</span><span id="int"></span></div>
+      <div><span>Service fee</span><span id="fee"></span></div>
+      <div><span>Grace</span><span id="grace"></span></div>
+    </div>
+
+    <button class="btn" id="post" type="button">Connect wallet</button>
+    <p class="note" id="pnote" role="status"></p>
+  </section>
+
+  <section class="card" id="borrowcard">
+    <h2>Borrow</h2>
+    <p class="sub">Open offers</p>
+    <div class="tabs" id="otabs" role="group" aria-label="Offers to show"></div>
+    <div class="list" id="offers"></div>
+    <p class="empty" id="noffers" hidden>No open offers</p>
+    <p class="note" id="onote" role="status"></p>
+  </section>
+
+  <section class="card" id="minecard">
+    <h2>Your loans</h2>
+    <p class="sub">Lent and borrowed</p>
+    <div class="list" id="mine"></div>
+    <p class="empty" id="nmine" hidden></p>
+    <p class="note" id="mnote" role="status"></p>
+  </section>
+
+  <section class="card" id="testcard" hidden>
+    <h2>Test tokens</h2>
+    <p class="sub">Free on testnet</p>
+    <div class="list" id="tokens"></div>
+    <p class="note" id="tnote" role="status"></p>
+  </section>
+</div>
+</main>
+<footer>
+  <a href="https://orbitwan.io" target="_blank" rel="noopener"><img src="shared/globe.svg?v=d93accf7" alt="OrbitWan" width="20" height="20"></a>
+  <a href="https://github.com/OrbitWan/xlend" target="_blank" rel="noopener"><img src="shared/github.svg?v=bce49418" alt="xLend on GitHub" width="20" height="20"></a>
+  <a href="https://x.com/orbitwanio" target="_blank" rel="noopener"><img src="shared/x.svg?v=693e6886" alt="OrbitWan on X" width="20" height="20"></a>
+</footer>
+<script src="shared/ethers-6.17.0.umd.min.js?v=53295051"></script>
+<script src="shared/wallet.js?v=180a9d95"></script>
+<script src="app.js?v=aea755f5"></script>
+</body>
+</html>

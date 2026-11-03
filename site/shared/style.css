@@ -1,0 +1,86 @@
+/* Shared styles of OrbitWan's dapps. Colours and fonts are orbitwan.io's: light by
+   default, dark when shared/theme.js sets data-theme="dark" on <html>, as on orbitwan.io. */
+/* Release id: the page, this file, shared/wallet.js and the page's app.js carry the same one, and app.js checks it. */
+:root { --build: bc31ad92f; }
+@font-face { font-family: 'Space Grotesk'; font-weight: 600; font-display: swap; src: url(fonts/space-grotesk-600.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Sans'; font-weight: 400; font-display: swap; src: url(fonts/ibm-plex-sans-400.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Sans'; font-weight: 500; font-display: swap; src: url(fonts/ibm-plex-sans-500.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 400; font-display: swap; src: url(fonts/ibm-plex-mono-400.woff2) format('woff2'); }
+
+:root {
+  --bg: #f6f8fa; --panel: #ffffff; --panel2: #eef1f5; --line: #d0d7de;
+  --txt: #1f2328; --dim: #59636e; --accent: #0969da; --mark: #2d7ff9; --bad: #d1242f; --good: #1a7f37;
+  --brand: #0a1020; --icon: none;
+  --head: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #0d1117; --panel: #161b22; --panel2: #1c2230; --line: #21262d;
+  --txt: #e6edf3; --dim: #8b949e; --accent: #58a6ff; --bad: #f85149; --good: #3fb950;
+  --brand: #e6edf3; --icon: invert(1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--txt); font: 15px/1.5 var(--body); -webkit-text-size-adjust: 100%; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+[hidden] { display: none !important; }
+
+.hdr { border-bottom: 1px solid var(--line); }
+.hdrin { max-width: 520px; margin: 0 auto; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font: 600 18px var(--head); color: var(--brand); }
+.brand:hover { text-decoration: none; }
+.brand svg { width: 22px; height: 22px; }
+.brand span { color: var(--dim); }
+.acct { margin-left: auto; font: 13px var(--mono); color: var(--dim); }
+.acctw { margin-left: auto; position: relative; }
+.chip { display: inline-flex; align-items: center; gap: 8px; appearance: none; cursor: pointer; font: 13px var(--mono); color: var(--txt); padding: 5px 10px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); }
+.chip::after { content: ''; width: 5px; height: 5px; margin-top: -3px; border-right: 1.5px solid var(--dim); border-bottom: 1.5px solid var(--dim); transform: rotate(45deg); }
+.chip:hover:not(:disabled), .chip[aria-expanded="true"] { border-color: var(--accent); }
+.chip:disabled { cursor: default; opacity: .6; }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 150px; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
+.mi { display: block; width: 100%; text-align: left; appearance: none; cursor: pointer; background: none; border: 0; border-radius: 8px; padding: 9px 12px; color: var(--txt); font: 500 14px var(--body); }
+.mi:hover { background: var(--panel2); color: var(--bad); }
+/* narrow phones: with the account chip shown, the brand keeps its mark and name (and below 350 px the mark alone) */
+@media (max-width: 420px) { .hdrin:has(#acct:not([hidden])) .brand span { display: none; } }
+@media (max-width: 350px) { .hdrin:has(#acct:not([hidden])) .brand { font-size: 0; gap: 0; } }
+.tog { flex: none; appearance: none; cursor: pointer; font: 500 13px var(--body); padding: 5px 12px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); color: var(--dim); }
+.tog:hover { color: var(--accent); border-color: var(--accent); }
+.tog .td, :root[data-theme="dark"] .tog .tl { display: none; }
+:root[data-theme="dark"] .tog .td { display: inline; }
+
+main { max-width: 520px; margin: 0 auto; padding: 24px 16px 40px; }
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+/* wide windows: two cards side by side, the header as wide as both; phones stack them */
+@media (min-width: 840px) {
+  .hdrin, main { max-width: 1024px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+h1, h2 { font: 600 24px var(--head); margin: 0 0 4px; letter-spacing: -.01em; }
+.sub { color: var(--dim); margin: 0 0 20px; }
+.lbl { display: block; color: var(--dim); font-size: 13px; margin: 0 0 6px; }
+.box { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.box input, .box output { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--txt); font: 24px var(--mono); padding: 0; }
+.box input::placeholder { color: var(--dim); }
+.box:focus-within { border-color: var(--accent); }
+.tok { font: 500 15px var(--body); }
+.under { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--dim); margin: 6px 2px 16px; }
+.under b { font: 13px var(--mono); color: var(--txt); font-weight: 400; }
+.max { background: none; border: 0; color: var(--accent); font: 500 13px var(--body); cursor: pointer; padding: 0; }
+.facts { margin: 16px 0; border-top: 1px solid var(--line); }
+.facts div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.facts span:first-child { color: var(--dim); }
+.facts span:last-child, .facts a#desk, .facts a#stock { font-family: var(--mono); text-align: right; }
+.btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 14px; background: var(--mark); color: #fff; font: 500 16px var(--body); text-align: center; cursor: pointer; }
+.btn:disabled { background: var(--panel2); color: var(--dim); cursor: default; }
+.btn:hover:not(:disabled) { text-decoration: none; filter: brightness(1.1); }
+.note { min-height: 21px; margin: 12px 2px 0; font-size: 14px; color: var(--dim); }
+.note.bad { color: var(--bad); }
+.note.good { color: var(--good); }
+
+footer { max-width: 520px; margin: 0 auto; padding: 0 16px 32px; display: flex; justify-content: center; gap: 20px; }
+footer img { display: block; filter: var(--icon); opacity: .55; }
+footer a:hover img { opacity: 1; }

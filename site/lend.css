@@ -1,0 +1,58 @@
+/* OrbitWan xLend: the page's own styles, on top of shared/style.css. */
+:root { --warn: #9a6700; }
+:root[data-theme="dark"] { --warn: #d29922; }
+
+/* phones: with the account chip shown, the brand keeps only its mark */
+@media (max-width: 480px) { .hdrin:has(#acct:not([hidden])) .brand { font-size: 0; gap: 0; } }
+
+#netnote { margin: 0 2px 16px; }
+.lbl.gap { margin-top: 16px; }
+/* the dollar value under an amount: one line, kept while blank so the form does not move; under You lend it follows
+   the balance row, which then keeps no space of its own below */
+.usd { min-height: 18px; margin: 4px 2px 0; font: 13px/18px var(--mono); color: var(--dim); }
+.under { margin-bottom: 0; }
+#lusd { margin-bottom: 16px; }
+.under:has(+ #lusd[hidden]) { margin-bottom: 16px; }
+.toksel { flex: none; max-width: 48%; background: none; border: 0; outline: 0; color: var(--txt); font: 500 16px var(--body); cursor: pointer; } /* 16px: a phone does not zoom in when it is tapped */
+.toksel option { background: var(--panel); color: var(--txt); }
+
+.seg { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.seg button { appearance: none; cursor: pointer; padding: 7px 0; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--txt); font: 500 14px var(--body); }
+.seg button b, .seg button span { display: block; line-height: 1.25; }
+.seg button b { font: 600 15px var(--body); }
+.seg button span { font-size: 11px; opacity: .8; }
+.seg button[aria-pressed="true"] { background: var(--mark); border-color: var(--mark); color: #fff; }
+.seg button:disabled { cursor: default; }
+
+/* the Borrow card's tabs: All, then each token in the token order */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.tabs button { appearance: none; cursor: pointer; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel2); color: var(--txt); font: 500 13px var(--body); }
+.tabs button[aria-pressed="true"] { background: var(--mark); border-color: var(--mark); color: #fff; }
+
+.list { display: grid; gap: 10px; }
+.row { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+/* the right-hand part moves under the left one when the row is too narrow for both */
+.r1, .r2 { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+.r1 .b, .r2 .d { margin-left: auto; text-align: right; white-space: nowrap; }
+.r1 .a { font: 18px var(--mono); overflow-wrap: anywhere; }
+.r1 .b { font: 14px var(--mono); }
+.r2 { margin-top: 2px; font-size: 13px; color: var(--dim); }
+/* an offer: Borrow, its number and the amount on one line */
+.offer .r1 .a { font: 500 18px var(--body); }
+/* a loan's number: a link to its latest transaction on the explorer once read, plain text until then */
+.r1 .a .n { margin-left: 8px; }
+.n:not([href]) { color: inherit; }
+.offer .r1 .b { font: 18px var(--mono); }
+.r3 { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 6px; }
+.r3 div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 2px 0; }
+.r3 span:first-child { color: var(--dim); }
+.r3 span:last-child { font-family: var(--mono); text-align: right; }
+.r3 div.em span { color: var(--txt); font-weight: 600; }
+.btn.sm { margin-top: 10px; padding: 10px; font-size: 15px; }
+.row .btn:disabled { background: var(--panel); box-shadow: inset 0 0 0 1px var(--line); }
+.st { font: 500 12px var(--body); white-space: nowrap; color: var(--dim); }
+.st.live { color: var(--accent); }
+.st.warn { color: var(--warn); }
+.st.bad { color: var(--bad); }
+.st.good { color: var(--good); }
+.empty { margin: 4px 2px; font-size: 14px; color: var(--dim); }
