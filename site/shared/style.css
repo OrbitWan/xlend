@@ -2,7 +2,7 @@
    own (its orbit-v2.css), so the apps read as part of the explorer; the layouts follow the owner's design (DAPPV2,
    DAPPV3). Light by default, dark when shared/theme.js sets data-theme="dark" on <html>. */
 /* Release id: the page, this file, shared/wallet.js and the page's app.js carry the same one, and app.js checks it. */
-:root { --build: bcdf7c9ee; }
+:root { --build: b6530fa5c; }
 @font-face { font-family: 'Geist'; font-weight: 400; font-display: swap; src: url(fonts/geist-400.woff2) format('woff2'); }
 @font-face { font-family: 'Geist'; font-weight: 500; font-display: swap; src: url(fonts/geist-500.woff2) format('woff2'); }
 @font-face { font-family: 'Geist'; font-weight: 600; font-display: swap; src: url(fonts/geist-600.woff2) format('woff2'); }
@@ -60,6 +60,9 @@ button, input, select { font-family: inherit; }
 .chip::after { content: ''; width: 6px; height: 6px; margin-top: -3px; border-right: 1.5px solid var(--tx3); border-bottom: 1.5px solid var(--tx3); transform: rotate(45deg); }
 .chip:hover:not(:disabled), .chip[aria-expanded="true"] { border-color: var(--tx3); }
 .chip:disabled { cursor: default; opacity: .6; }
+/* the header's wallet button: Connect wallet, or Open in MetaMask with no wallet in the browser, until an account is
+   connected (owner, 18 Nov 2026, DAPPV3L) */
+.btn.hb { width: auto; min-height: 36px; height: 36px; padding: 0 14px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
 .menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 160px; padding: 4px; background: var(--sf); border: 1px solid var(--bd); border-radius: 10px; box-shadow: 0 12px 32px -12px rgba(16, 20, 24, .25); }
 .mi { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 7px; background: none; color: var(--tx); font: 500 14px var(--sans); text-align: left; cursor: pointer; appearance: none; }
 .mi:hover { background: var(--rdb); color: var(--rd); }
@@ -76,10 +79,10 @@ button, input, select { font-family: inherit; }
 }
 @media (max-width: 639px) { .hdr-in { column-gap: 8px; } .acts { gap: 8px; } }
 /* narrow phones: with the account chip shown, the logo keeps only its mark */
-@media (max-width: 480px) { .hdr-in:has(#acct:not([hidden])) .brand { font-size: 0; } .hdr-in:has(#acct:not([hidden])) .brand .mk { width: 32px; height: 32px; margin: 0; } }
+@media (max-width: 480px) { .hdr-in:has(#acct:not([hidden])) .brand, .hdr-in:has(#conn:not([hidden])) .brand { font-size: 0; } .hdr-in:has(#acct:not([hidden])) .brand .mk, .hdr-in:has(#conn:not([hidden])) .brand .mk { width: 32px; height: 32px; margin: 0; } }
 
 /* ---- page ---- */
-main { width: 100%; max-width: var(--wd); margin: 0 auto; padding: 24px var(--gx) 48px; }
+main { width: 100%; max-width: var(--wd); margin: 0 auto; padding: 24px var(--gx); }
 .card { min-width: 0; background: var(--sf); border: 1px solid var(--bd); border-radius: 16px; padding: var(--cp); }
 h1, h2 { margin: 0; }
 /* a state chip, orbitwan.io's: Sell now, Buy now, a loan's state */
@@ -147,7 +150,7 @@ h1, h2 { margin: 0; }
 /* under 840 px one desk above the other, 520 px wide with the header beside it, as before DAPPV2 */
 @media (max-width: 839px) { html:has(.cards) { --wd: 568px; } }
 
-/* ---- footer ---- */
+/* ---- footer: as much space above its icons as below (24 + 8 + 9 px either way; owner, 18 Nov 2026, DAPPV3G) ---- */
 footer { display: flex; justify-content: center; gap: 8px; padding: 8px 16px 32px; }
 footer a { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 footer a:hover { background: var(--chip); }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-build="bcdf7c9ee">
+<html lang="en" data-build="b6530fa5c">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,8 +10,8 @@
 <meta name="description" content="Fixed-term loans between two people on Wanchain.">
 <script src="shared/theme.js?v=e246a3f3"></script>
 <link rel="icon" href="shared/icon.svg?v=0e46d894" type="image/svg+xml">
-<link rel="stylesheet" href="shared/style.css?v=042153fc">
-<link rel="stylesheet" href="lend.css?v=4a2e1894">
+<link rel="stylesheet" href="shared/style.css?v=89bca054">
+<link rel="stylesheet" href="lend.css?v=7e9bff71">
 </head>
 <body>
 <header class="hdr">
@@ -19,6 +19,7 @@
     <a class="brand" href="https://orbitwan.io" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#2D7FF9"/><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><circle cx="50" cy="50" r="18" fill="#2D7FF9"/></svg>OrbitWan<span>.io</span></a>
     <nav class="nav" aria-label="OrbitWan apps"><a href="https://express.orbitwan.io" data-here="../">Express</a><a href="https://xlend.orbitwan.io" data-here="./" aria-current="page">xLend</a></nav>
     <div class="acts">
+      <button class="btn hb" id="conn" type="button" hidden data-ne="&#8599;"></button>
       <div class="acctw"><button class="chip" id="acct" type="button" hidden aria-haspopup="menu" aria-expanded="false"></button><div class="menu" id="menu" role="menu" hidden><button class="mi" id="disc" type="button" role="menuitem">Disconnect</button></div></div>
       <button class="tog" id="tog" type="button"><span class="tl">Dark</span><span class="td">Light</span></button>
     </div>
@@ -40,7 +41,7 @@
     <div class="tabs" id="otabs" role="group" aria-label="Offers to show"></div>
     <div class="tscroll">
       <div class="table">
-        <div class="thead" aria-hidden="true"><span>Offer</span><span>Amount</span><span>Collateral</span><span>APR</span><span>Term</span><span>Service fee</span><span>You repay</span><span></span></div>
+        <div class="thead" id="osort" role="group" aria-label="Sort the offers"><button type="button" data-sort="id">Offer<span class="arr"></span></button><button type="button" data-sort="amount">Amount<span class="arr"></span></button><button type="button" data-sort="coll">Collateral<span class="arr"></span></button><button type="button" data-sort="apr">APR<span class="arr"></span></button><button type="button" data-sort="term">Term<span class="arr"></span></button><button type="button" data-sort="fee">Service fee<span class="arr"></span></button><button type="button" data-sort="repay">You repay<span class="arr"></span></button><span></span></div>
         <div class="list" id="offers"></div>
       </div>
     </div>
@@ -104,8 +105,13 @@
 </div>
 
 <div class="view" id="vloans" hidden>
-  <section class="card" id="minecard">
-    <div class="list" id="mine"></div>
+  <section class="card tcard" id="minecard">
+    <div class="tscroll">
+      <div class="table">
+        <div class="thead lhead" id="lhead" hidden><span>Loan</span><span>Role</span><span>Amount</span><span>Collateral</span><span>APR</span><span>Term</span><span>Status</span><span>Payback</span><span></span></div>
+        <div class="list" id="mine"></div>
+      </div>
+    </div>
     <p class="empty" id="nmine" hidden></p>
     <p class="note" id="mnote" role="status"></p>
   </section>
@@ -113,11 +119,12 @@
 </main>
 <footer>
   <a href="https://orbitwan.io" target="_blank" rel="noopener"><img src="shared/globe.svg?v=d93accf7" alt="OrbitWan" width="20" height="20"></a>
+  <a href="https://orbitwan.io/address/0x6dfa0b14be511cb0ff735c147f650b5791b84848" target="_blank" rel="noopener"><img src="shared/contract.svg?v=444e22d3" alt="The xLend contract on OrbitWan" width="20" height="20"></a>
   <a href="https://github.com/OrbitWan/xlend" target="_blank" rel="noopener"><img src="shared/github.svg?v=bce49418" alt="xLend on GitHub" width="20" height="20"></a>
   <a href="https://x.com/orbitwanio" target="_blank" rel="noopener"><img src="shared/x.svg?v=693e6886" alt="OrbitWan on X" width="20" height="20"></a>
 </footer>
 <script src="shared/ethers-6.17.0.umd.min.js?v=53295051"></script>
-<script src="shared/wallet.js?v=0764f563"></script>
-<script src="app.js?v=7f6e1413"></script>
+<script src="shared/wallet.js?v=892485b5"></script>
+<script src="app.js?v=ed795ba3"></script>
 </body>
 </html>

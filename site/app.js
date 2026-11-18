@@ -27,7 +27,7 @@
 
   // One release: the page, shared/style.css, shared/wallet.js and this file carry one release id; on a mismatch the
   // page loads itself once more under an address no cache holds (?r=), then runs with what it has.
-  const BUILD = 'bcdf7c9ee';
+  const BUILD = 'b6530fa5c';
   {
     const u = new URL(location.href);
     const css = getComputedStyle(document.documentElement).getPropertyValue('--build').trim();
@@ -145,7 +145,9 @@
     offersFailed: false, mineFailed: false, // that part of the last read failed; the rest of the page stands
     bal: null, allow: null, credit: null, owed: {}, // the connected account's, by token address; owed by loan id
     term: 0,
-    otab: '',           // the Borrow card's tab: '' All, else a token address (the offers that lend it)
+    otab: '',           // the Borrow card's tab: '' All, else a token address (the offers that lend it or take it)
+    osort: 'id',        // the table's sort column (a button's data-sort in #osort), highest first unless oasc
+    oasc: false,
     approvedNow: '',    // the step whose approval just went through: its button says (2 of 2)
     busy: '', busyKey: '',
     notes: { post: null, offers: null, mine: null, test: null },
@@ -688,7 +690,7 @@
   function loanStep(l) {
     if (walletStep() || !s.bal) return null;
     const me = lc(s.account), key = 'l' + l.id, t = nowEst();
-    if (l.state === OPEN && l.lender === me) return { text: 'Cancel offer', run: () => cancel(l) };
+    if (l.state === OPEN && l.lender === me) return { text: 'Cancel', run: () => cancel(l) };
     if (l.state !== ACTIVE || t === null) return null;
     if (l.lender === me && t > graceEnd(l)) return s.bal[WAN] === 0n ? { text: 'No WAN for gas' } : { text: 'Claim collateral', run: () => claim(l) };
     if (l.borrower !== me) return null;
@@ -768,9 +770,10 @@
   const amtUp = (v, t) => { if (v === null || v === undefined || !t || t.dec <= 6) return amt(v, t); const q = 10n ** BigInt(t.dec - 6); return amt(ceilDiv(v, q) * q, t); };
   const exact = (v, t) => formatUnits(v, t.dec).replace(/[.]0$/, '');
   const pct = (bps) => formatUnits(BigInt(bps), 2).replace(/[.]0$/, '') + '%';
-  // five characters written by code point, so the file holds only ASCII and no backslash
+  // seven characters written by code point, so the file holds only ASCII and no backslash
   const ELL = String.fromCharCode(0x2026), DOT = String.fromCharCode(0xb7), RSQ = String.fromCharCode(0x2019), APX = String.fromCharCode(0x2248);
   const NE = String.fromCharCode(0x2197); // the arrow of a button that opens the MetaMask app
+  const DOWN = String.fromCharCode(0x2193), UP = String.fromCharCode(0x2191); // the sort column's arrow: highest first, lowest first
   const short = (a) => `${a.slice(0, 6)}${ELL}${a.slice(-4)}`;
   // A token's USD price from the table, times 1e18: null while the table, or the chain's time, is still being read;
   // 'none' when the table has no price for it, or its price is older than the table's own limit (fresh_secs) by the
@@ -812,7 +815,6 @@
   }
   const menu = (open) => { $('menu').hidden = !open; $('acct').setAttribute('aria-expanded', open ? 'true' : 'false'); };
   const set = (n, text) => { if (n.textContent !== text) n.textContent = text; };
-  const setCls = (n, c) => { if (n.className !== c) n.className = c; };
   const setData = (n, k, v) => { if (v) { if (n.dataset[k] !== v) n.dataset[k] = v; } else if (k in n.dataset) delete n.dataset[k]; };
   // a token's place in NET's list ('' for none): shared/style.css draws its logo by it (data-i on the element that shows it)
   const tix = (addr) => { const i = NET.tokens.findIndex((t) => t.addr === lc(addr)); return i < 0 ? '' : String(i); };
@@ -840,9 +842,9 @@
   // Lists keep one element per item, keyed, so a refresh changes text in place and never replaces a button mid-tap.
   function row(key) {
     const el = document.createElement('div');
-    el.className = key[0] === 'o' ? 'row offer' : 'row'; el.dataset.key = key;
-    // a loan's number (.n, in .a for an offer, in .c for the account's loans) links to its latest transaction
-    el.innerHTML = '<div class="r1"><span class="a"><span class="at"></span><a class="n" target="_blank" rel="noopener" hidden></a></span><span class="b"></span></div><div class="r2"><span class="c"><a class="n" target="_blank" rel="noopener" hidden></a><span class="ct"></span></span><span class="d"></span></div><div class="r3"></div><button class="btn sm" type="button"></button>';
+    el.className = key[0] === 'o' ? 'row offer' : key[0] === 'l' || key[0] === 'w' ? 'row loan' : 'row'; el.dataset.key = key;
+    // an offer's or a loan's number (.a .n) links to its latest transaction
+    el.innerHTML = '<div class="r1"><span class="a"><span class="at"></span><a class="n" target="_blank" rel="noopener" hidden></a></span><span class="b"></span></div><div class="r3"></div><button class="btn sm" type="button"></button>';
     el.querySelector('button').addEventListener('click', () => onClick(key));
     el.querySelector('button').dataset.ne = NE;
     return el;
@@ -856,18 +858,15 @@
     set(el.querySelector('.at'), x.a || '');
     fillNum(el.querySelector('.a .n'), x.an, x.anHref);
     const b = el.querySelector('.b');
-    set(b, x.b || ''); setCls(b, x.bc ? `b st ${x.bc}` : 'b'); setData(b, 'i', x.lt);
-    set(el.querySelector('.ct'), x.c || '');
-    fillNum(el.querySelector('.c .n'), x.cn, x.cnHref);
-    set(el.querySelector('.d'), x.d || '');
-    el.querySelector('.r2').hidden = !x.c && !x.cn && !x.d;
+    set(b, x.b || ''); setData(b, 'i', x.lt);
     const box = el.querySelector('.r3'), rows = x.facts || [];
     const v = JSON.stringify(rows);
     if (box.dataset.v !== v) {
       box.dataset.v = v;
-      box.replaceChildren(...rows.map(([k, val, ti]) => {
+      box.replaceChildren(...rows.map(([k, val, ti, cls]) => {
         const d = document.createElement('div'), p = document.createElement('span'), q = document.createElement('span');
         if (ti) q.dataset.i = ti;
+        if (cls) q.className = cls;
         p.textContent = k; q.textContent = val; d.append(p, q); return d;
       }));
     }
@@ -888,6 +887,19 @@
     });
   }
 
+  // an offer's value in a table column, as shown in that row: an amount in whole tokens (brought to 18 decimals, so
+  // 100 USDC and 100 WAN are equal), the APR, the term's days or the offer's number
+  const whole = (v, t) => v * 10n ** BigInt(18 - (t ? t.dec : 18));
+  function sortKey(l, col) {
+    const lt = tok(l.loanToken);
+    if (col === 'amount') return whole(l.loanAmount, lt);
+    if (col === 'coll') return whole(l.collAmount, tok(l.collToken));
+    if (col === 'apr') return l.aprBps;
+    if (col === 'term') return TERM_DAYS[l.term];
+    if (col === 'fee') return whole(feeOf(l.loanAmount, l.feeBps), lt);
+    if (col === 'repay') return whole(l.loanAmount + interestOf(l.loanAmount, l.aprBps, l.term) + feeOf(l.loanAmount, l.feeBps), lt);
+    return l.id;
+  }
   function offerItem(l) {
     const lt = tok(l.loanToken), ct = tok(l.collToken);
     const interest = interestOf(l.loanAmount, l.aprBps, l.term);
@@ -910,44 +922,57 @@
       ],
     };
   }
+  // a loan of the account as a row of the Your loans table (owner, 18 Nov 2026, DAPPV3L): its number, the account's
+  // role, the amount, the collateral, APR, term, the state's chip and the payback: what the lender gets back or the
+  // borrower owes, late interest included
   function loanItem(l) {
     const me = lc(s.account), lender = l.lender === me;
-    const lt = tok(l.loanToken), ct = tok(l.collToken), t = nowEst();
-    const x = {
-      key: 'l' + l.id,
-      a: `${lender ? 'Lent' : 'Borrowed'} ${amt(l.loanAmount, lt)} ${lt ? lt.sym : ''}`,
-      cn: `#${l.id}`,
-      cnHref: txLink(l),
-      c: ` ${DOT} Collateral ${lender ? amt(l.collAmount, ct) : amtUp(l.collAmount, ct)} ${ct ? ct.sym : ''}`,
-      d: `${pct(l.aprBps)} APR ${DOT} ${days(l.term)}`,
-      facts: [],
-    };
-    if (l.state === OPEN) { x.b = 'Open'; x.bc = 'live'; x.facts.push(['Term', days(l.term)]); }
-    else if (l.state === REPAID) { x.b = 'Repaid'; x.bc = 'good'; }
-    else if (l.state === CLAIMED) { x.b = 'Claimed'; x.bc = ''; }
-    else if (l.state === CANCELLED) { x.b = 'Cancelled'; x.bc = ''; }
+    const lt = tok(l.loanToken), ct = tok(l.collToken), t = nowEst(), sym = lt ? lt.sym : '';
+    let st = '', sc = 'st', pay = '';
+    if (l.state === OPEN) { st = 'Open'; sc = 'st live'; }
+    else if (l.state === REPAID) { st = 'Repaid'; sc = 'st good'; }
+    else if (l.state === CLAIMED) st = 'Claimed';
+    else if (l.state === CANCELLED) st = 'Cancelled';
     else if (l.state === ACTIVE) {
-      if (t === null) { x.b = s.readFailed ? '-' : ''; }
-      else if (t <= dueOf(l)) { x.b = `Due in ${left(dueOf(l) - t)}`; x.bc = 'live'; }
-      else if (t <= graceEnd(l)) { x.b = `Late ${DOT} ${left(graceEnd(l) - t)} left`; x.bc = 'warn'; }
-      else { x.b = lender ? 'Claimable' : 'Grace over'; x.bc = 'bad'; }
+      if (t === null) { st = s.readFailed ? '-' : ''; sc = ''; }
+      else if (t <= dueOf(l)) { st = `Due in ${left(dueOf(l) - t)}`; sc = 'st live'; }
+      else if (t <= graceEnd(l)) { st = `Late ${DOT} ${left(graceEnd(l) - t)} left`; sc = 'st warn'; }
+      else { st = lender ? 'Claimable' : 'Grace over'; sc = 'st bad'; }
       // the borrower owes loan, interest, late interest and the fee; the lender gets all of it but the fee. After the
       // grace period the loan can no longer be repaid, so no amount is shown: the lender can take the collateral.
-      if (t !== null && t > graceEnd(l)) return x;
-      const o = owedNow(l), stale = !o && !!s.owed[l.id];
-      const total = o ? `${lender ? amt(o.total - o.fee, lt) : amtUp(o.total, lt)} ${lt ? lt.sym : ''}` : (s.readFailed || stale ? '-' : '');
-      x.facts.push([lender ? 'You get back' : 'You owe', total]);
-      if (o && o.late > 0n) x.facts.push(['Late interest', `${amtUp(o.late, lt)} ${lt.sym}`]);
-      else if (stale && t !== null && t > dueOf(l)) x.facts.push(['Late interest', '-']);
+      if (t === null || t <= graceEnd(l)) {
+        const o = owedNow(l), stale = !o && !!s.owed[l.id];
+        pay = o ? `${lender ? amt(o.total - o.fee, lt) : amtUp(o.total, lt)} ${sym}` : (s.readFailed || stale ? '-' : '');
+      }
     }
-    return x;
+    return {
+      key: 'l' + l.id,
+      lt: tix(l.loanToken),
+      an: `#${l.id}`,
+      anHref: txLink(l),
+      b: `${amt(l.loanAmount, lt)} ${sym}`,
+      facts: [
+        ['Role', lender ? 'Lent' : 'Borrowed'],
+        ['Collateral', `${lender ? amt(l.collAmount, ct) : amtUp(l.collAmount, ct)} ${ct ? ct.sym : ''}`, tix(l.collToken)],
+        ['APR', pct(l.aprBps)],
+        ['Term', days(l.term)],
+        ['Status', st, '', st ? sc : ''],
+        ['Payback', pay],
+      ],
+    };
   }
+
 
   function render() {
     $('acct').textContent = s.account ? short(s.account) : '';
     $('acct').hidden = !s.account;
     $('acct').disabled = !!s.busy;
     if (!s.account || s.busy) menu(false);
+    // the header's wallet button: the first wallet step (Connect wallet, or Open in MetaMask with no wallet in the
+    // browser) until an account is connected (owner, 18 Nov 2026, DAPPV3L)
+    const hw = s.account ? null : walletStep();
+    $('conn').hidden = !hw;
+    if (hw) { if ($('conn').textContent !== hw.text) $('conn').textContent = hw.text; $('conn').disabled = !hw.run || !!s.busy; $('conn').classList.toggle('ext', !!hw.ext); }
     $('netnote').hidden = s.net !== 'bad';
     $('netnote').textContent = s.net === 'bad' ? `This wallet${RSQ}s network ${NET.chainId} is not ${NET.params.chainName}.` : '';
     const none = s.readFailed ? '-' : '';
@@ -973,16 +998,26 @@
     showButton($('post'), 'post');
     showNote($('pnote'), s.notes.post);
 
-    // open offers, the lowest APR first and the newest first among equal APRs; a token's tab lists the offers that
-    // lend that token, then the offers that take it as collateral (owner, 18 Nov 2026); the account's own offers show
-    // only under Your loans, once read there
+    // open offers in the table's order: the column the user picked, highest first, lowest first after a second click,
+    // the newest first among equal values; Offer, highest first, when the page opens and when All is pressed (owner,
+    // 18 Nov 2026, DAPPV3S); a token's tab lists the offers that lend that token, then the offers that take it as
+    // collateral, each part in that order (owner, 18 Nov 2026); the account's own offers show only under Your loans,
+    // once read there
     for (const b of $('otabs').children) b.setAttribute('aria-pressed', String(b.dataset.tok === s.otab));
+    for (const b of $('osort').querySelectorAll('button')) {
+      const on = b.dataset.sort === s.osort;
+      b.setAttribute('aria-pressed', String(on));
+      set(b.querySelector('.arr'), on ? (s.oasc ? UP : DOWN) : '');
+    }
     const me = mine && s.mine ? lc(s.account) : '';
     const open = s.loans && s.meta ? s.loans.filter((l) => l.state === OPEN && l.lender !== me) : [];
-    const byApr = (p, q) => (p.aprBps < q.aprBps ? -1 : p.aprBps > q.aprBps ? 1 : p.id < q.id ? 1 : -1);
+    const byCol = (p, q) => {
+      const a = sortKey(p, s.osort), b = sortKey(q, s.osort);
+      return a !== b ? ((a < b) === s.oasc ? -1 : 1) : p.id < q.id ? 1 : -1;
+    };
     const offers = s.otab
-      ? [...open.filter((l) => l.loanToken === s.otab).sort(byApr), ...open.filter((l) => l.loanToken !== s.otab && l.collToken === s.otab).sort(byApr)]
-      : open.sort(byApr);
+      ? [...open.filter((l) => l.loanToken === s.otab).sort(byCol), ...open.filter((l) => l.loanToken !== s.otab && l.collToken === s.otab).sort(byCol)]
+      : open.sort(byCol);
     syncList($('offers'), offers.map(offerItem));
     // offers that could not be read show a dash; the page shows no message for a failed read
     const oUnread = !s.loans && (s.readFailed || s.offersFailed);
@@ -990,12 +1025,15 @@
     set($('noffers'), oUnread ? '-' : 'No open offers');
     showNote($('onote'), s.notes.offers);
 
-    // the account's loans: active first, the soonest due on top, then open offers, then the rest,
-    // newest first; and anything to withdraw
+    // the account's loans: anything to withdraw first, then active loans, the soonest due on top, then open offers,
+    // then the rest, newest first
     const items = [];
     if (mine) {
       for (const t of s.meta.tokens) {
-        if (s.credit[t.addr] > 0n) items.push({ key: 'w' + t.addr, a: `${amt(s.credit[t.addr], t)} ${t.sym}`, b: 'To withdraw', bc: 'warn' });
+        if (s.credit[t.addr] > 0n) {
+          items.push({ key: 'w' + t.addr, lt: tix(t.addr), b: `${amt(s.credit[t.addr], t)} ${t.sym}`,
+            facts: [['Role', ''], ['Collateral', ''], ['APR', ''], ['Term', ''], ['Status', 'To withdraw', '', 'st warn'], ['Payback', '']] });
+        }
       }
       if (s.mine) {
         const rank = (l) => (l.state === ACTIVE ? 0 : l.state === OPEN ? 1 : 2);
@@ -1006,8 +1044,9 @@
       }
     }
     syncList($('mine'), items);
+    $('lhead').hidden = !items.length;
     $('nmine').hidden = !!items.length;
-    set($('nmine'), !s.account ? 'Connect a wallet to see your loans' : s.net !== 'ok' ? '' : s.mine && s.bal ? 'No loans yet' : (s.readFailed || s.mineFailed ? '-' : ''));
+    set($('nmine'), !s.account ? 'Connect wallet' : s.net !== 'ok' ? '' : s.mine && s.bal ? 'No loans yet' : (s.readFailed || s.mineFailed ? '-' : ''));
     showNote($('mnote'), s.notes.mine);
 
     // test tokens: each listed token, the account's balance, and a button for the ones anyone can mint
@@ -1032,8 +1071,16 @@
     const b = document.createElement('button');
     b.type = 'button'; b.dataset.tok = addr; b.textContent = label;
     if (i) b.dataset.i = i;
-    b.addEventListener('click', () => { s.otab = addr; render(); });
+    // All starts the table again as a new visitor sees it: every offer, Offer highest first (owner, 18 Nov 2026, DAPPV3S)
+    b.addEventListener('click', () => { s.otab = addr; if (!addr) { s.osort = 'id'; s.oasc = false; } render(); });
     $('otabs').appendChild(b);
+  }
+  // the table's column names sort the offers: a first click highest first, the next lowest first, and so on (DAPPV3S)
+  for (const b of $('osort').querySelectorAll('button')) {
+    b.addEventListener('click', () => {
+      if (s.osort === b.dataset.sort) s.oasc = !s.oasc; else { s.osort = b.dataset.sort; s.oasc = false; }
+      render();
+    });
   }
   // the three views (DAPPV2, owner's design of 18 Nov 2026): Borrow (the open offers) first, Lend (the offer form) and
   // Your loans; the view's title and subtitle above them
@@ -1056,6 +1103,12 @@
     typed();
   });
   $('post').addEventListener('click', () => onClick('post'));
+  $('conn').addEventListener('click', async () => {
+    const a = s.account || s.busy ? null : walletStep();
+    if (!a || !a.run) return;
+    try { await a.run(); } catch (e) { await syncWallet().catch(() => {}); } // a closed or refused wallet window changes nothing
+    render();
+  });
   $('acct').addEventListener('click', (e) => { e.stopPropagation(); menu($('menu').hidden); });
   $('disc').addEventListener('click', () => { menu(false); disconnect().catch(() => {}); });
   document.addEventListener('click', (e) => { if (!$('menu').hidden && !$('menu').contains(e.target)) menu(false); });

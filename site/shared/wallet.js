@@ -2,7 +2,7 @@
 // Wallet helpers shared by OrbitWan's dapps. They speak EIP-1193 to the wallet the browser provides
 // (MetaMask or any compatible wallet) and never see a key: the wallet signs, the page only asks.
 window.Wallet = (() => {
-  const BUILD = 'bcdf7c9ee'; // release id: the page, shared/style.css and the page's app.js carry the same one
+  const BUILD = 'b6530fa5c'; // release id: the page, shared/style.css and the page's app.js carry the same one
   const WANCHAIN = {
     chainId: '0x378', // 888
     chainName: 'Wanchain',

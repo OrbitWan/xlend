@@ -24,30 +24,51 @@ main > .note { margin: 0; }
 .tabs button[aria-pressed="true"] { background: var(--acb); border-color: var(--ac); color: var(--ac); }
 .tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .table { min-width: 960px; }
-.thead, .offer { display: grid; grid-template-columns: 60px minmax(0, 1.3fr) minmax(0, 1.25fr) 60px 72px minmax(0, .9fr) minmax(0, 1.4fr) 176px; column-gap: 16px; align-items: center; padding: 0 var(--cpx); border-top: 1px solid var(--bd2); }
+.thead, .offer, .loan { display: grid; grid-template-columns: 60px minmax(0, 1.3fr) minmax(0, 1.25fr) 60px 72px minmax(0, .9fr) minmax(0, 1.4fr) 176px; column-gap: 16px; align-items: center; padding: 0 var(--cpx); border-top: 1px solid var(--bd2); }
 .thead { padding-top: 10px; padding-bottom: 10px; color: var(--tx3); font: 600 12px var(--sans); letter-spacing: .06em; text-transform: uppercase; }
+/* the column names sort the table (DAPPV3S): the sort column in the text colour with its arrow */
+.thead button { justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; white-space: nowrap; cursor: pointer; appearance: none; }
+.thead button:hover, .thead button[aria-pressed="true"] { color: var(--tx); }
+.thead .arr:empty { display: none; }
+/* Your loans (owner, 18 Nov 2026, DAPPV3L): Loan, Role, Amount, Collateral, APR, Term, Status, Payback and the button */
+.lhead, .loan { grid-template-columns: 40px 64px minmax(0, 1fr) minmax(0, 1fr) 48px 60px 140px minmax(0, 1.25fr) 186px; column-gap: 10px; padding-left: 20px; padding-right: 20px; }
+.lhead { border-top: 0; }
 /* every cell of a row in one font, size and weight, the text colour but the number's link blue (owner, 18 Nov 2026, DAPPV3F) */
-.offer { min-height: 56px; padding-top: 8px; padding-bottom: 8px; color: var(--tx); font: 500 14px var(--sans); font-variant-numeric: tabular-nums; }
-.offer:hover { background: var(--sf2); }
-.offer .r1, .offer .r3 { display: contents; }
-.offer .r1 .a { grid-column: 1; grid-row: 1; font: inherit; }
-.offer .r1 .at { display: none; }
-.offer .r1 .a .n { margin: 0; color: var(--ac); font: inherit; }
-.offer .r1 .b { grid-column: 2; grid-row: 1; min-width: 0; margin: 0; display: flex; align-items: center; gap: 8px; font: inherit; white-space: nowrap; }
-.offer .r1 .b::before { width: 20px; height: 20px; }
-.offer .r3 div { grid-row: 1; min-width: 0; display: flex; align-items: center; gap: 6px; font-size: inherit; white-space: nowrap; }
-.offer .r3 div span:last-child { font: inherit; }
-.offer .r3 div span:first-child { display: none; }
+:is(.offer, .loan) { min-height: 56px; padding-top: 8px; padding-bottom: 8px; color: var(--tx); font: 500 14px var(--sans); font-variant-numeric: tabular-nums; }
+:is(.offer, .loan):hover { background: var(--sf2); }
+:is(.offer, .loan) :is(.r1, .r3) { display: contents; }
+:is(.offer, .loan) .r1 .a { grid-column: 1; grid-row: 1; font: inherit; }
+:is(.offer, .loan) .r1 .at { display: none; }
+:is(.offer, .loan) .r1 .a .n { margin: 0; color: var(--ac); font: inherit; }
+:is(.offer, .loan) .r1 .b { grid-column: 2; grid-row: 1; min-width: 0; margin: 0; display: flex; align-items: center; gap: 8px; font: inherit; white-space: nowrap; }
+:is(.offer, .loan) .r1 .b::before { width: 20px; height: 20px; }
+:is(.offer, .loan) .r3 div { grid-row: 1; min-width: 0; display: flex; align-items: center; gap: 6px; font-size: inherit; white-space: nowrap; }
+:is(.offer, .loan) .r3 div span:last-child { font: inherit; }
+:is(.offer, .loan) .r3 div span:first-child { display: none; }
 .offer .r3 div:nth-child(1) { grid-column: 3; }
-.offer .r3 div:nth-child(1) span:last-child { display: inline-flex; align-items: center; gap: 6px; }
-.offer .r3 div:nth-child(1) span:last-child::before { width: 16px; height: 16px; }
+:is(.offer .r3 div:nth-child(1), .loan .r3 div:nth-child(2)) span:last-child { display: inline-flex; align-items: center; gap: 6px; }
+:is(.offer .r3 div:nth-child(1), .loan .r3 div:nth-child(2)) span:last-child::before { width: 16px; height: 16px; }
 .offer .r3 div:nth-child(2) { grid-column: 4; }
 .offer .r3 div:nth-child(3) { grid-column: 6; }
 .offer .r3 div:nth-child(4) { grid-column: 7; }
 .offer .r3 div:nth-child(5) { grid-column: 5; }
-.offer .btn.sm { grid-column: 8; grid-row: 1; margin: 0; min-height: 32px; padding: 6px 10px; border-radius: 8px; background: var(--acb); color: var(--ac); font-size: 13px; white-space: nowrap; }
-.offer .btn.sm:hover:not(:disabled) { background: var(--brand); color: #FFFFFF; }
-.offer .btn.sm:disabled { background: var(--chip); color: var(--tx3); }
+.offer .btn.sm { grid-column: 8; }
+/* a loan row: its number, then Role, the amount, Collateral, APR, Term, Status (its chip), Payback and the button */
+.loan .r3 div:nth-child(1) { grid-column: 2; }
+.loan .r1 .b { grid-column: 3; }
+.loan .r3 div:nth-child(2) { grid-column: 4; }
+.loan .r3 div:nth-child(3) { grid-column: 5; }
+.loan .r3 div:nth-child(4) { grid-column: 6; }
+.loan .r3 div:nth-child(5) { grid-column: 7; }
+.loan .r3 div:nth-child(6) { grid-column: 8; }
+.loan .r3 div span.st:last-child { font: 600 12px var(--sans); }
+/* a long value (a large amount, a late chip's time left) takes a second line rather than run into the next column */
+.loan .r1 .b, .loan .r3 div { white-space: normal; text-align: left; }
+.loan .r3 div span.st:last-child { height: auto; min-height: 24px; padding-top: 3px; padding-bottom: 3px; line-height: 18px; white-space: normal; }
+.loan .btn.sm { grid-column: 9; }
+:is(.offer, .loan) .btn.sm { grid-row: 1; margin: 0; min-height: 32px; padding: 6px 10px; border-radius: 8px; background: var(--acb); color: var(--ac); font-size: 13px; white-space: nowrap; }
+:is(.offer, .loan) .btn.sm:hover:not(:disabled) { background: var(--brand); color: #FFFFFF; }
+:is(.offer, .loan) .btn.sm:disabled { background: var(--chip); color: var(--tx3); }
 .empty { margin: 0; padding: 32px var(--cpx); border-top: 1px solid var(--bd2); color: var(--tx2); font-size: 14px; text-align: center; }
 .tcard .note { margin: 10px var(--cpx) 8px; }
 .tcard .note:empty { margin: 0; }
@@ -88,33 +109,22 @@ main > .note { margin: 0; }
 .lsum .note { margin-top: -6px; }
 .lsum .note:empty { margin: 0; }
 
-/* the account's loans, and the test tokens: one row each, the button on the right */
+/* the test tokens (testnet only): one row each, the button on the right */
 #mine, #tokens { display: grid; }
-#minecard { padding: 4px 0; }
 #testcard { padding: 20px 0 4px; }
 #testcard h2 { padding: 0 var(--cpx); font: 600 18px/24px var(--sans); }
 #testcard .vsub { margin: 2px 0 12px; padding: 0 var(--cpx); }
-.row:not(.offer) { display: grid; grid-template-columns: minmax(0, 1fr) 176px; column-gap: 16px; align-items: center; padding: 12px var(--cpx); border-top: 1px solid var(--bd2); }
-#mine .row:first-child { border-top: 0; }
-.row:not(.offer) > div { grid-column: 1; }
-.row:not(.offer) > .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; min-height: 36px; padding: 8px 12px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
-/* the button spans only the lines the row shows */
-@media (min-width: 640px) {
-  .row:not(.offer):has(> .r2[hidden]) > .btn, .row:not(.offer):has(> .r3[hidden]) > .btn { grid-row: 1 / span 2; }
-  .row:not(.offer):has(> .r2[hidden]):has(> .r3[hidden]) > .btn { grid-row: 1; }
-}
-.r1, .r2 { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
-.r1 .b, .r2 .d { margin-left: auto; text-align: right; white-space: nowrap; }
+#tokens .row { display: grid; grid-template-columns: minmax(0, 1fr) 176px; column-gap: 16px; align-items: center; padding: 12px var(--cpx); border-top: 1px solid var(--bd2); }
+#tokens .row > div { grid-column: 1; }
+#tokens .row > .btn { grid-column: 2; grid-row: 1; margin: 0; min-height: 36px; padding: 8px 12px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
+#tokens .r3 { display: none; }
+.r1 { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+.r1 .b { margin-left: auto; text-align: right; white-space: nowrap; }
+/* the test tokens in the table's type: Geist 14 px, values 500 in the text colour (owner, 18 Nov 2026, DAPPV3G) */
 .r1 .a { font: 600 15px var(--sans); overflow-wrap: anywhere; }
-.r1 .b { font: 500 var(--fm) var(--mono); }
-.r2 { margin-top: 2px; color: var(--tx2); font: var(--fm) var(--mono); }
-#mine .r1 .b:not(.st) { color: var(--tx2); font: 500 13px var(--sans); }
-/* a loan's number: a link to its latest transaction on the explorer once read, plain text until then */
+.r1 .b { font: 500 14px var(--sans); }
+/* a number: a link to its latest transaction on the explorer once read, plain text until then */
 .n:not([href]) { color: inherit; }
-.r3 { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 20px; }
-.r3 div { display: flex; gap: 6px; font-size: 13px; }
-.r3 span:first-child { color: var(--tx2); }
-.r3 span:last-child { font-family: var(--mono); }
 #nmine { padding: 48px var(--cpx); border-top: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 #nmine::before { content: ''; width: 44px; height: 44px; border-radius: 50%; background: var(--sf2); box-shadow: inset 0 0 0 15px var(--sf2), inset 0 0 0 18px var(--bd); }
 #nmine:empty { padding: 0; }
@@ -131,6 +141,6 @@ main > .note { margin: 0; }
   /* 16px: a phone does not zoom in when a picker is tapped */
   .toksel { font-size: 16px; }
   .aprterm { grid-template-columns: minmax(0, 1fr); }
-  .row:not(.offer) { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
-  .row:not(.offer) > .btn { grid-column: 1; grid-row: auto; }
+  #tokens .row { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
+  #tokens .row > .btn { grid-column: 1; grid-row: auto; }
 }
