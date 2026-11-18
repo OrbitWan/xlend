@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-build="bc31ad92f">
+<html lang="en" data-build="bcdf7c9ee">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,81 +8,106 @@
 <link rel="preconnect" href="https://gwan-ssl.wandevs.org:56891" crossorigin>
 <title>OrbitWan xLend</title>
 <meta name="description" content="Fixed-term loans between two people on Wanchain.">
-<script src="shared/theme.js?v=4b7e182b"></script>
+<script src="shared/theme.js?v=e246a3f3"></script>
 <link rel="icon" href="shared/icon.svg?v=0e46d894" type="image/svg+xml">
-<link rel="stylesheet" href="shared/style.css?v=f65888a4">
-<link rel="stylesheet" href="lend.css?v=c153a0df">
+<link rel="stylesheet" href="shared/style.css?v=042153fc">
+<link rel="stylesheet" href="lend.css?v=4a2e1894">
 </head>
 <body>
 <header class="hdr">
-  <div class="hdrin">
-    <a class="brand" href="https://orbitwan.io"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#2D7FF9"/><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><circle cx="50" cy="50" r="18" fill="#2D7FF9"/></svg>OrbitWan<span>xLend</span></a>
-    <div class="acctw"><button class="chip" id="acct" type="button" hidden aria-haspopup="menu" aria-expanded="false"></button><div class="menu" id="menu" role="menu" hidden><button class="mi" id="disc" type="button" role="menuitem">Disconnect</button></div></div>
-    <button class="tog" id="tog" type="button"><span class="tl">Dark</span><span class="td">Light</span></button>
+  <div class="hdr-in">
+    <a class="brand" href="https://orbitwan.io" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#2D7FF9"/><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><circle cx="50" cy="50" r="18" fill="#2D7FF9"/></svg>OrbitWan<span>.io</span></a>
+    <nav class="nav" aria-label="OrbitWan apps"><a href="https://express.orbitwan.io" data-here="../">Express</a><a href="https://xlend.orbitwan.io" data-here="./" aria-current="page">xLend</a></nav>
+    <div class="acts">
+      <div class="acctw"><button class="chip" id="acct" type="button" hidden aria-haspopup="menu" aria-expanded="false"></button><div class="menu" id="menu" role="menu" hidden><button class="mi" id="disc" type="button" role="menuitem">Disconnect</button></div></div>
+      <button class="tog" id="tog" type="button"><span class="tl">Dark</span><span class="td">Light</span></button>
+    </div>
   </div>
 </header>
 <main>
 <p class="note bad" id="netnote" role="status" hidden></p>
-<div class="cards">
-  <section class="card" id="lendcard">
-    <h1>Lend</h1>
-    <p class="sub">Post an offer</p>
+<div class="vhead">
+  <div class="vt"><h1 id="vtitle">Borrow</h1><p class="vsub" id="vsub">Open offers</p></div>
+  <div class="vtabs" id="views" role="group" aria-label="View">
+    <button type="button" data-view="borrow" aria-pressed="true">Borrow</button>
+    <button type="button" data-view="lend" aria-pressed="false">Lend</button>
+    <button type="button" data-view="loans" aria-pressed="false">Your loans</button>
+  </div>
+</div>
 
-    <label class="lbl" for="lamt">You lend</label>
-    <div class="box"><input id="lamt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><select class="toksel" id="ltok" aria-label="Loan token"></select></div>
-    <div class="under"><span id="lbalrow" hidden>Balance <b id="lbal"></b></span><button class="max" id="lmax" type="button" hidden>MAX</button></div>
-    <p class="usd" id="lusd"></p>
-
-    <label class="lbl" for="camt">Collateral</label>
-    <div class="box"><input id="camt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><select class="toksel" id="ctok" aria-label="Collateral token"></select></div>
-    <p class="usd" id="cusd"></p>
-
-    <label class="lbl gap" for="rate">APR</label>
-    <div class="box"><input id="rate" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><span class="tok">%</span></div>
-
-    <span class="lbl gap">Term</span>
-    <div class="seg" id="term" role="group" aria-label="Term">
-      <button type="button" data-term="0" aria-pressed="true"><b>30</b><span>days</span></button>
-      <button type="button" data-term="1" aria-pressed="false"><b>60</b><span>days</span></button>
-      <button type="button" data-term="2" aria-pressed="false"><b>90</b><span>days</span></button>
-      <button type="button" data-term="3" aria-pressed="false"><b>180</b><span>days</span></button>
-      <button type="button" data-term="4" aria-pressed="false"><b>365</b><span>days</span></button>
-    </div>
-
-    <div class="facts">
-      <div><span>Collateral</span><span id="coll"></span></div>
-      <div><span>APR</span><span id="apr"></span></div>
-      <div><span>Interest</span><span id="int"></span></div>
-      <div><span>Service fee</span><span id="fee"></span></div>
-      <div><span>Grace</span><span id="grace"></span></div>
-    </div>
-
-    <button class="btn" id="post" type="button">Connect wallet</button>
-    <p class="note" id="pnote" role="status"></p>
-  </section>
-
-  <section class="card" id="borrowcard">
-    <h2>Borrow</h2>
-    <p class="sub">Open offers</p>
+<div class="view" id="vborrow">
+  <section class="card tcard" id="borrowcard">
     <div class="tabs" id="otabs" role="group" aria-label="Offers to show"></div>
-    <div class="list" id="offers"></div>
+    <div class="tscroll">
+      <div class="table">
+        <div class="thead" aria-hidden="true"><span>Offer</span><span>Amount</span><span>Collateral</span><span>APR</span><span>Term</span><span>Service fee</span><span>You repay</span><span></span></div>
+        <div class="list" id="offers"></div>
+      </div>
+    </div>
     <p class="empty" id="noffers" hidden>No open offers</p>
     <p class="note" id="onote" role="status"></p>
   </section>
+</div>
 
-  <section class="card" id="minecard">
-    <h2>Your loans</h2>
-    <p class="sub">Lent and borrowed</p>
-    <div class="list" id="mine"></div>
-    <p class="empty" id="nmine" hidden></p>
-    <p class="note" id="mnote" role="status"></p>
+<div class="view" id="vlend" hidden>
+  <section class="card" id="lendcard">
+    <div class="lform">
+      <div class="lin">
+        <div class="field">
+          <label class="lbl" for="lamt">You lend</label>
+          <div class="box"><input id="lamt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><span class="tsel"><select class="toksel" id="ltok" aria-label="Loan token"></select></span></div>
+          <div class="under"><span id="lbalrow" hidden>Balance <b id="lbal"></b></span><button class="max" id="lmax" type="button" hidden>MAX</button></div>
+          <p class="usd" id="lusd"></p>
+        </div>
+        <div class="field">
+          <label class="lbl" for="camt">Collateral</label>
+          <div class="box"><input id="camt" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><span class="tsel"><select class="toksel" id="ctok" aria-label="Collateral token"></select></span></div>
+          <p class="usd" id="cusd"></p>
+        </div>
+        <div class="aprterm">
+          <div class="field aprf">
+            <label class="lbl" for="rate">APR</label>
+            <div class="box"><input id="rate" inputmode="decimal" placeholder="0" autocomplete="off" spellcheck="false"><span class="pc">%</span></div>
+          </div>
+          <div class="termf">
+            <span class="lbl">Term</span>
+            <div class="seg" id="term" role="group" aria-label="Term">
+              <button type="button" data-term="0" aria-pressed="true"><b>30</b><span>days</span></button>
+              <button type="button" data-term="1" aria-pressed="false"><b>60</b><span>days</span></button>
+              <button type="button" data-term="2" aria-pressed="false"><b>90</b><span>days</span></button>
+              <button type="button" data-term="3" aria-pressed="false"><b>180</b><span>days</span></button>
+              <button type="button" data-term="4" aria-pressed="false"><b>365</b><span>days</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lsum">
+        <div class="facts">
+          <div><span>Collateral</span><span id="coll"></span></div>
+          <div><span>APR</span><span id="apr"></span></div>
+          <div><span>Interest</span><span id="int"></span></div>
+          <div><span>Service fee</span><span id="fee"></span></div>
+          <div><span>Grace</span><span id="grace"></span></div>
+        </div>
+        <button class="btn" id="post" type="button" data-ne="&#8599;">Connect wallet</button>
+        <p class="note" id="pnote" role="status"></p>
+      </div>
+    </div>
   </section>
 
   <section class="card" id="testcard" hidden>
     <h2>Test tokens</h2>
-    <p class="sub">Free on testnet</p>
+    <p class="vsub">Free on testnet</p>
     <div class="list" id="tokens"></div>
     <p class="note" id="tnote" role="status"></p>
+  </section>
+</div>
+
+<div class="view" id="vloans" hidden>
+  <section class="card" id="minecard">
+    <div class="list" id="mine"></div>
+    <p class="empty" id="nmine" hidden></p>
+    <p class="note" id="mnote" role="status"></p>
   </section>
 </div>
 </main>
@@ -92,7 +117,7 @@
   <a href="https://x.com/orbitwanio" target="_blank" rel="noopener"><img src="shared/x.svg?v=693e6886" alt="OrbitWan on X" width="20" height="20"></a>
 </footer>
 <script src="shared/ethers-6.17.0.umd.min.js?v=53295051"></script>
-<script src="shared/wallet.js?v=180a9d95"></script>
-<script src="app.js?v=aea755f5"></script>
+<script src="shared/wallet.js?v=0764f563"></script>
+<script src="app.js?v=7f6e1413"></script>
 </body>
 </html>

@@ -27,7 +27,7 @@
 
   // One release: the page, shared/style.css, shared/wallet.js and this file carry one release id; on a mismatch the
   // page loads itself once more under an address no cache holds (?r=), then runs with what it has.
-  const BUILD = 'bc31ad92f';
+  const BUILD = 'bcdf7c9ee';
   {
     const u = new URL(location.href);
     const css = getComputedStyle(document.documentElement).getPropertyValue('--build').trim();
@@ -610,7 +610,7 @@
 
   // ---- what each button does -----------------------------------------------------------------------
   function walletStep() {
-    if (!W.eth()) return { text: 'Open in MetaMask', run: () => { location.href = W.metamaskLink(); } };
+    if (!W.eth()) return { text: 'Open in MetaMask', ext: true, run: () => { location.href = W.metamaskLink(); } };
     if (!s.account) return { text: 'Connect wallet', run: connect };
     if (s.net === 'other') return { text: `Switch to ${NET.params.chainName}`, run: switchChain };
     if (s.net === 'check') return { text: 'Reading Wanchain' };
@@ -768,8 +768,9 @@
   const amtUp = (v, t) => { if (v === null || v === undefined || !t || t.dec <= 6) return amt(v, t); const q = 10n ** BigInt(t.dec - 6); return amt(ceilDiv(v, q) * q, t); };
   const exact = (v, t) => formatUnits(v, t.dec).replace(/[.]0$/, '');
   const pct = (bps) => formatUnits(BigInt(bps), 2).replace(/[.]0$/, '') + '%';
-  // four characters written by code point, so the file holds only ASCII and no backslash
+  // five characters written by code point, so the file holds only ASCII and no backslash
   const ELL = String.fromCharCode(0x2026), DOT = String.fromCharCode(0xb7), RSQ = String.fromCharCode(0x2019), APX = String.fromCharCode(0x2248);
+  const NE = String.fromCharCode(0x2197); // the arrow of a button that opens the MetaMask app
   const short = (a) => `${a.slice(0, 6)}${ELL}${a.slice(-4)}`;
   // A token's USD price from the table, times 1e18: null while the table, or the chain's time, is still being read;
   // 'none' when the table has no price for it, or its price is older than the table's own limit (fresh_secs) by the
@@ -812,6 +813,9 @@
   const menu = (open) => { $('menu').hidden = !open; $('acct').setAttribute('aria-expanded', open ? 'true' : 'false'); };
   const set = (n, text) => { if (n.textContent !== text) n.textContent = text; };
   const setCls = (n, c) => { if (n.className !== c) n.className = c; };
+  const setData = (n, k, v) => { if (v) { if (n.dataset[k] !== v) n.dataset[k] = v; } else if (k in n.dataset) delete n.dataset[k]; };
+  // a token's place in NET's list ('' for none): shared/style.css draws its logo by it (data-i on the element that shows it)
+  const tix = (addr) => { const i = NET.tokens.findIndex((t) => t.addr === lc(addr)); return i < 0 ? '' : String(i); };
 
   function showNote(el, n) {
     const kind = n ? n.kind : '';
@@ -830,7 +834,7 @@
   function showButton(b, key) {
     const a = action(key);
     b.hidden = !a;
-    if (a) { set(b, a.text); b.disabled = !a.run || !!s.busy; }
+    if (a) { set(b, a.text); b.disabled = !a.run || !!s.busy; b.classList.toggle('ext', !!a.ext); }
   }
 
   // Lists keep one element per item, keyed, so a refresh changes text in place and never replaces a button mid-tap.
@@ -840,6 +844,7 @@
     // a loan's number (.n, in .a for an offer, in .c for the account's loans) links to its latest transaction
     el.innerHTML = '<div class="r1"><span class="a"><span class="at"></span><a class="n" target="_blank" rel="noopener" hidden></a></span><span class="b"></span></div><div class="r2"><span class="c"><a class="n" target="_blank" rel="noopener" hidden></a><span class="ct"></span></span><span class="d"></span></div><div class="r3"></div><button class="btn sm" type="button"></button>';
     el.querySelector('button').addEventListener('click', () => onClick(key));
+    el.querySelector('button').dataset.ne = NE;
     return el;
   }
   function fillNum(n, num, href) {
@@ -851,7 +856,7 @@
     set(el.querySelector('.at'), x.a || '');
     fillNum(el.querySelector('.a .n'), x.an, x.anHref);
     const b = el.querySelector('.b');
-    set(b, x.b || ''); setCls(b, x.bc ? `b st ${x.bc}` : 'b');
+    set(b, x.b || ''); setCls(b, x.bc ? `b st ${x.bc}` : 'b'); setData(b, 'i', x.lt);
     set(el.querySelector('.ct'), x.c || '');
     fillNum(el.querySelector('.c .n'), x.cn, x.cnHref);
     set(el.querySelector('.d'), x.d || '');
@@ -860,9 +865,9 @@
     const v = JSON.stringify(rows);
     if (box.dataset.v !== v) {
       box.dataset.v = v;
-      box.replaceChildren(...rows.map(([k, val, cls]) => {
+      box.replaceChildren(...rows.map(([k, val, ti]) => {
         const d = document.createElement('div'), p = document.createElement('span'), q = document.createElement('span');
-        if (cls) d.className = cls;
+        if (ti) q.dataset.i = ti;
         p.textContent = k; q.textContent = val; d.append(p, q); return d;
       }));
     }
@@ -891,15 +896,16 @@
     // which includes it.
     return {
       key: 'o' + l.id,
+      lt: tix(l.loanToken),
       a: 'Borrow',
       an: `#${l.id}`,
       anHref: txLink(l),
       b: `${amt(l.loanAmount, lt)} ${sym}`,
       facts: [
-        ['Collateral', `${amtUp(l.collAmount, ct)} ${ct ? ct.sym : ''}`],
+        ['Collateral', `${amtUp(l.collAmount, ct)} ${ct ? ct.sym : ''}`, tix(l.collToken)],
         ['APR', pct(l.aprBps)],
         ['Service fee', `${amtUp(feeOf(l.loanAmount, l.feeBps), lt)} ${sym}`],
-        ['You repay', `${amtUp(l.loanAmount + interest + feeOf(l.loanAmount, l.feeBps), lt)} ${sym}`, 'em'],
+        ['You repay', `${amtUp(l.loanAmount + interest + feeOf(l.loanAmount, l.feeBps), lt)} ${sym}`],
         ['Term', days(l.term)],
       ],
     };
@@ -949,6 +955,7 @@
 
     // the offer form
     const f = form();
+    setData($('ltok').parentNode, 'i', tix(f.ltok || '')); setData($('ctok').parentNode, 'i', tix(f.ctok || ''));
     for (const b of $('term').children) { b.setAttribute('aria-pressed', String(Number(b.dataset.term) === s.term)); b.disabled = !!s.busy; }
     // while a step runs the form is locked, so what it shows is what is being signed
     for (const id of ['lamt', 'ltok', 'camt', 'ctok', 'rate', 'lmax']) $(id).disabled = !!s.busy;
@@ -966,13 +973,16 @@
     showButton($('post'), 'post');
     showNote($('pnote'), s.notes.post);
 
-    // open offers, the lowest APR first and the newest first among equal APRs; a token's tab shows only the offers
-    // that lend that token; the account's own offers show only under Your loans, once read there
+    // open offers, the lowest APR first and the newest first among equal APRs; a token's tab lists the offers that
+    // lend that token, then the offers that take it as collateral (owner, 18 Nov 2026); the account's own offers show
+    // only under Your loans, once read there
     for (const b of $('otabs').children) b.setAttribute('aria-pressed', String(b.dataset.tok === s.otab));
     const me = mine && s.mine ? lc(s.account) : '';
     const open = s.loans && s.meta ? s.loans.filter((l) => l.state === OPEN && l.lender !== me) : [];
     const byApr = (p, q) => (p.aprBps < q.aprBps ? -1 : p.aprBps > q.aprBps ? 1 : p.id < q.id ? 1 : -1);
-    const offers = (s.otab ? open.filter((l) => l.loanToken === s.otab) : open).sort(byApr);
+    const offers = s.otab
+      ? [...open.filter((l) => l.loanToken === s.otab).sort(byApr), ...open.filter((l) => l.loanToken !== s.otab && l.collToken === s.otab).sort(byApr)]
+      : open.sort(byApr);
     syncList($('offers'), offers.map(offerItem));
     // offers that could not be read show a dash; the page shows no message for a failed read
     const oUnread = !s.loans && (s.readFailed || s.offersFailed);
@@ -1014,13 +1024,30 @@
   for (const id of ['lamt', 'camt', 'rate']) $(id).addEventListener('input', typed);
   for (const id of ['ltok', 'ctok']) $(id).addEventListener('change', typed);
   for (const b of $('term').children) b.addEventListener('click', () => { s.term = Number(b.dataset.term); typed(); });
-  // the Borrow card's tabs, built from NET's tokens: All, then each token in NET's order
-  for (const [addr, label] of [['', 'All'], ...NET.tokens.map((t) => [t.addr, t.sym])]) {
+  // the Borrow card's tabs, built from NET's tokens: All, then USDT and USDC, then the others in NET's order (owner,
+  // 18 Nov 2026, DAPPV3F), each with its logo (its place in NET)
+  const tabRank = (t) => (/USDT$/.test(t.sym) ? 0 : /USDC$/.test(t.sym) ? 1 : 2);
+  const tabToks = NET.tokens.map((t, i) => [t.addr, t.sym, String(i), tabRank(t)]).sort((p, q) => p[3] - q[3]);
+  for (const [addr, label, i] of [['', 'All', ''], ...tabToks]) {
     const b = document.createElement('button');
     b.type = 'button'; b.dataset.tok = addr; b.textContent = label;
+    if (i) b.dataset.i = i;
     b.addEventListener('click', () => { s.otab = addr; render(); });
     $('otabs').appendChild(b);
   }
+  // the three views (DAPPV2, owner's design of 18 Nov 2026): Borrow (the open offers) first, Lend (the offer form) and
+  // Your loans; the view's title and subtitle above them
+  const VIEWS = { borrow: ['Borrow', 'Open offers'], lend: ['Lend', 'Post an offer'], loans: ['Your loans', 'Lent and borrowed'] };
+  let view = 'borrow';
+  function showView() {
+    for (const [k, [title, sub]] of Object.entries(VIEWS)) {
+      $('v' + k).hidden = k !== view;
+      if (k === view) { set($('vtitle'), title); set($('vsub'), sub); }
+    }
+    for (const b of $('views').children) b.setAttribute('aria-pressed', String(b.dataset.view === view));
+  }
+  for (const b of $('views').children) b.addEventListener('click', () => { view = b.dataset.view; showView(); });
+  showView();
   $('lmax').addEventListener('click', () => {
     const f = form();
     if (!s.bal || !f.lt) return;

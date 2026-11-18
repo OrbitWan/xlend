@@ -1,86 +1,155 @@
-/* Shared styles of OrbitWan's dapps. Colours and fonts are orbitwan.io's: light by
-   default, dark when shared/theme.js sets data-theme="dark" on <html>, as on orbitwan.io. */
+/* The styles OrbitWan's dapps share (xWAN Express and xLend). Their header, colours, type and sizes are orbitwan.io's
+   own (its orbit-v2.css), so the apps read as part of the explorer; the layouts follow the owner's design (DAPPV2,
+   DAPPV3). Light by default, dark when shared/theme.js sets data-theme="dark" on <html>. */
 /* Release id: the page, this file, shared/wallet.js and the page's app.js carry the same one, and app.js checks it. */
-:root { --build: bc31ad92f; }
-@font-face { font-family: 'Space Grotesk'; font-weight: 600; font-display: swap; src: url(fonts/space-grotesk-600.woff2) format('woff2'); }
-@font-face { font-family: 'IBM Plex Sans'; font-weight: 400; font-display: swap; src: url(fonts/ibm-plex-sans-400.woff2) format('woff2'); }
-@font-face { font-family: 'IBM Plex Sans'; font-weight: 500; font-display: swap; src: url(fonts/ibm-plex-sans-500.woff2) format('woff2'); }
-@font-face { font-family: 'IBM Plex Mono'; font-weight: 400; font-display: swap; src: url(fonts/ibm-plex-mono-400.woff2) format('woff2'); }
+:root { --build: bcdf7c9ee; }
+@font-face { font-family: 'Geist'; font-weight: 400; font-display: swap; src: url(fonts/geist-400.woff2) format('woff2'); }
+@font-face { font-family: 'Geist'; font-weight: 500; font-display: swap; src: url(fonts/geist-500.woff2) format('woff2'); }
+@font-face { font-family: 'Geist'; font-weight: 600; font-display: swap; src: url(fonts/geist-600.woff2) format('woff2'); }
+@font-face { font-family: 'Geist'; font-weight: 700; font-display: swap; src: url(fonts/geist-700.woff2) format('woff2'); }
+@font-face { font-family: 'Geist Mono'; font-weight: 400; font-display: swap; src: url(fonts/geist-mono-400.woff2) format('woff2'); }
+@font-face { font-family: 'Geist Mono'; font-weight: 500; font-display: swap; src: url(fonts/geist-mono-500.woff2) format('woff2'); }
+@font-face { font-family: 'Geist Mono'; font-weight: 600; font-display: swap; src: url(fonts/geist-mono-600.woff2) format('woff2'); }
 
+/* ---- colours and sizes: orbitwan.io's, by the same names ---- */
 :root {
-  --bg: #f6f8fa; --panel: #ffffff; --panel2: #eef1f5; --line: #d0d7de;
-  --txt: #1f2328; --dim: #59636e; --accent: #0969da; --mark: #2d7ff9; --bad: #d1242f; --good: #1a7f37;
-  --brand: #0a1020; --icon: none;
-  --head: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-  --body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --bg: #F6F7F9; --hd: #FFFFFF; --sf: #FFFFFF; --sf2: #F8FAFC; --bd: #E4E7EB; --bd2: #EEF0F3; --chip: #F0F2F5;
+  --tx: #101418; --tx2: #4A5360; --tx3: #6B7480; --ac: #0A66E0; --acb: #EAF1FC;
+  --gn: #1A7F37; --gnb: #E8F5EC; --rd: #C9302C; --rdb: #FCEDED; --am: #8A5A00; --amb: #FBF0D9; --or: #BC4C00; --orb: #FFF1E5;
+  --brand: #0A66E0; --brandh: #0857C2;
+  --icon: none;
+  --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+  --gx: 24px; --cp: 22px 24px; --cpx: 24px; --h1: 30px; --fm: 13px;
+  /* the apps' width: 992 px of content, as express.orbitwan.io had before DAPPV2 (owner, DAPPV3W); orbitwan.io's is 1180 */
+  --wd: 1040px;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --bg: #0d1117; --panel: #161b22; --panel2: #1c2230; --line: #21262d;
-  --txt: #e6edf3; --dim: #8b949e; --accent: #58a6ff; --bad: #f85149; --good: #3fb950;
-  --brand: #e6edf3; --icon: invert(1);
+  --bg: #0B0F14; --hd: #10151C; --sf: #121821; --sf2: #171E29; --bd: #242C38; --bd2: #1D2430; --chip: #1C2430;
+  --tx: #E8ECF1; --tx2: #A6AFBC; --tx3: #808B99; --ac: #5B9BFF; --acb: rgba(91, 155, 255, .14);
+  --gn: #4CC77A; --gnb: rgba(76, 199, 122, .14); --rd: #FF7A7A; --rdb: rgba(255, 122, 122, .10);
+  --am: #E6B450; --amb: rgba(230, 180, 80, .14); --or: #F0883E; --orb: rgba(240, 136, 62, .14);
+  --brandh: #1A74EA;
+  --icon: invert(1);
   color-scheme: dark;
 }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--txt); font: 15px/1.5 var(--body); -webkit-text-size-adjust: 100%; }
-a { color: var(--accent); text-decoration: none; }
+@media (max-width: 639px) { :root { --gx: 16px; --cp: 16px; --cpx: 16px; --h1: 26px; --fm: 12px; } }
+
+/* ---- base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--tx); font: 14px/20px var(--sans); font-variant-numeric: tabular-nums; -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+a { color: var(--ac); text-decoration: none; }
 a:hover { text-decoration: underline; }
+button, input, select { font-family: inherit; }
 [hidden] { display: none !important; }
 
-.hdr { border-bottom: 1px solid var(--line); }
-.hdrin { max-width: 520px; margin: 0 auto; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
-.brand { display: inline-flex; align-items: center; gap: 8px; font: 600 18px var(--head); color: var(--brand); }
+/* ---- header: orbitwan.io's, with the apps where the explorer has its pages, then the account chip and the theme switch ---- */
+.hdr { background: var(--hd); border-bottom: 1px solid var(--bd); }
+.hdr-in { max-width: var(--wd); margin: 0 auto; padding: 0 var(--gx); min-height: 68px; display: flex; flex-wrap: wrap; align-items: center; column-gap: 16px; row-gap: 12px; }
+.brand { order: 1; display: flex; align-items: center; font-size: 22px; font-weight: 700; letter-spacing: -.03em; color: var(--tx); }
 .brand:hover { text-decoration: none; }
-.brand svg { width: 22px; height: 22px; }
-.brand span { color: var(--dim); }
-.acct { margin-left: auto; font: 13px var(--mono); color: var(--dim); }
-.acctw { margin-left: auto; position: relative; }
-.chip { display: inline-flex; align-items: center; gap: 8px; appearance: none; cursor: pointer; font: 13px var(--mono); color: var(--txt); padding: 5px 10px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); }
-.chip::after { content: ''; width: 5px; height: 5px; margin-top: -3px; border-right: 1.5px solid var(--dim); border-bottom: 1.5px solid var(--dim); transform: rotate(45deg); }
-.chip:hover:not(:disabled), .chip[aria-expanded="true"] { border-color: var(--accent); }
+.brand .mk { flex: none; display: block; width: 1.464em; height: 1.464em; margin-inline-end: .357em; }
+.brand span { font-weight: inherit; letter-spacing: inherit; color: inherit; }
+.nav { order: 2; align-self: stretch; margin: 0 0 0 8px; display: flex; gap: 4px; }
+.nav a { display: flex; align-items: center; padding: 0 12px; font-size: 15px; font-weight: 500; color: var(--tx2); border-top: 2px solid transparent; border-bottom: 2px solid transparent; }
+.nav a:hover { color: var(--tx); text-decoration: none; }
+.nav a[aria-current="page"] { color: var(--tx); border-bottom-color: var(--ac); }
+.acts { order: 3; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.acctw { position: relative; }
+.chip { height: 36px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px 0 14px; border-radius: 999px; border: 1px solid var(--bd); background: var(--sf2); color: var(--tx); font: 500 13px var(--mono); cursor: pointer; appearance: none; }
+.chip::after { content: ''; width: 6px; height: 6px; margin-top: -3px; border-right: 1.5px solid var(--tx3); border-bottom: 1.5px solid var(--tx3); transform: rotate(45deg); }
+.chip:hover:not(:disabled), .chip[aria-expanded="true"] { border-color: var(--tx3); }
 .chip:disabled { cursor: default; opacity: .6; }
-.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 150px; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
-.mi { display: block; width: 100%; text-align: left; appearance: none; cursor: pointer; background: none; border: 0; border-radius: 8px; padding: 9px 12px; color: var(--txt); font: 500 14px var(--body); }
-.mi:hover { background: var(--panel2); color: var(--bad); }
-/* narrow phones: with the account chip shown, the brand keeps its mark and name (and below 350 px the mark alone) */
-@media (max-width: 420px) { .hdrin:has(#acct:not([hidden])) .brand span { display: none; } }
-@media (max-width: 350px) { .hdrin:has(#acct:not([hidden])) .brand { font-size: 0; gap: 0; } }
-.tog { flex: none; appearance: none; cursor: pointer; font: 500 13px var(--body); padding: 5px 12px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); color: var(--dim); }
-.tog:hover { color: var(--accent); border-color: var(--accent); }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; min-width: 160px; padding: 4px; background: var(--sf); border: 1px solid var(--bd); border-radius: 10px; box-shadow: 0 12px 32px -12px rgba(16, 20, 24, .25); }
+.mi { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 7px; background: none; color: var(--tx); font: 500 14px var(--sans); text-align: left; cursor: pointer; appearance: none; }
+.mi:hover { background: var(--rdb); color: var(--rd); }
+.tog { height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--bd); background: var(--sf); color: var(--tx2); font-size: 14px; font-weight: 500; cursor: pointer; }
+.tog:hover { color: var(--tx); }
 .tog .td, :root[data-theme="dark"] .tog .tl { display: none; }
 :root[data-theme="dark"] .tog .td { display: inline; }
-
-main { max-width: 520px; margin: 0 auto; padding: 24px 16px 40px; }
-.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-/* wide windows: two cards side by side, the header as wide as both; phones stack them */
-@media (min-width: 840px) {
-  .hdrin, main { max-width: 1024px; }
-  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+/* the compact header (orbitwan.io's, under 1100px): the logo and the actions, then the apps on a row of their own */
+@media (max-width: 1099px) {
+  .hdr-in { padding: 16px var(--gx); min-height: 0; }
+  .acts { order: 2; }
+  .nav { order: 3; flex-basis: 100%; align-self: auto; margin: 0 -12px; }
+  .nav a { padding: 10px 12px; }
 }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
-h1, h2 { font: 600 24px var(--head); margin: 0 0 4px; letter-spacing: -.01em; }
-.sub { color: var(--dim); margin: 0 0 20px; }
-.lbl { display: block; color: var(--dim); font-size: 13px; margin: 0 0 6px; }
-.box { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
-.box input, .box output { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--txt); font: 24px var(--mono); padding: 0; }
-.box input::placeholder { color: var(--dim); }
-.box:focus-within { border-color: var(--accent); }
-.tok { font: 500 15px var(--body); }
-.under { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--dim); margin: 6px 2px 16px; }
-.under b { font: 13px var(--mono); color: var(--txt); font-weight: 400; }
-.max { background: none; border: 0; color: var(--accent); font: 500 13px var(--body); cursor: pointer; padding: 0; }
-.facts { margin: 16px 0; border-top: 1px solid var(--line); }
-.facts div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
-.facts span:first-child { color: var(--dim); }
-.facts span:last-child, .facts a#desk, .facts a#stock { font-family: var(--mono); text-align: right; }
-.btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 14px; background: var(--mark); color: #fff; font: 500 16px var(--body); text-align: center; cursor: pointer; }
-.btn:disabled { background: var(--panel2); color: var(--dim); cursor: default; }
-.btn:hover:not(:disabled) { text-decoration: none; filter: brightness(1.1); }
-.note { min-height: 21px; margin: 12px 2px 0; font-size: 14px; color: var(--dim); }
-.note.bad { color: var(--bad); }
-.note.good { color: var(--good); }
+@media (max-width: 639px) { .hdr-in { column-gap: 8px; } .acts { gap: 8px; } }
+/* narrow phones: with the account chip shown, the logo keeps only its mark */
+@media (max-width: 480px) { .hdr-in:has(#acct:not([hidden])) .brand { font-size: 0; } .hdr-in:has(#acct:not([hidden])) .brand .mk { width: 32px; height: 32px; margin: 0; } }
 
-footer { max-width: 520px; margin: 0 auto; padding: 0 16px 32px; display: flex; justify-content: center; gap: 20px; }
-footer img { display: block; filter: var(--icon); opacity: .55; }
+/* ---- page ---- */
+main { width: 100%; max-width: var(--wd); margin: 0 auto; padding: 24px var(--gx) 48px; }
+.card { min-width: 0; background: var(--sf); border: 1px solid var(--bd); border-radius: 16px; padding: var(--cp); }
+h1, h2 { margin: 0; }
+/* a state chip, orbitwan.io's: Sell now, Buy now, a loan's state */
+.st { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--chip); color: var(--tx2); font: 600 12px var(--sans); white-space: nowrap; }
+.st::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st.live { background: var(--acb); color: var(--ac); }
+.st.good { background: var(--gnb); color: var(--gn); }
+.st.warn { background: var(--amb); color: var(--am); }
+.st.bad { background: var(--rdb); color: var(--rd); }
+.st.sell { background: var(--orb); color: var(--or); }
+
+/* a token's logo, the explorer's own file (xWAN shows WAN's, as on orbitwan.io): data-i is the token's place in the
+   apps' list, xLend's NET order: WAN, xWAN, BTC, ETH, USDT, USDC, ADA, VET, XRP. Each page sets the logo's size. */
+[data-i]::before { content: ''; flex: none; border-radius: 50%; background: var(--chip) center / cover no-repeat; }
+[data-i="0"]::before, [data-i="1"]::before { background-image: url(tokens/wan.png); }
+[data-i="2"]::before { background-image: url(tokens/btc.png); }
+[data-i="3"]::before { background-image: url(tokens/eth.png); }
+[data-i="4"]::before { background-image: url(tokens/usdt.png); }
+[data-i="5"]::before { background-image: url(tokens/usdc.png); }
+[data-i="6"]::before { background-image: url(tokens/ada.png); }
+[data-i="7"]::before { background-image: url(tokens/vet.svg); }
+[data-i="8"]::before { background-image: url(tokens/xrp.png); }
+
+/* an amount: its label, the number with its token, and under them the balance and MAX */
+.field { background: var(--sf2); border: 1px solid var(--bd); border-radius: 12px; padding: 16px; }
+.field:focus-within { border-color: var(--ac); }
+.lbl { display: block; margin: 0 0 6px; color: var(--tx2); font-size: 13px; font-weight: 500; }
+.box { display: flex; align-items: center; gap: 10px; }
+.box input, .box output { flex: 1; min-width: 0; height: 40px; padding: 0; border: 0; outline: 0; background: none; color: var(--tx); font: 500 28px/40px var(--sans); letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.box input::placeholder { color: var(--tx3); opacity: 1; }
+.tok { flex: none; height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px 0 5px; border-radius: 999px; border: 1px solid var(--bd); background: var(--sf); font: 600 14px var(--sans); }
+.tok::before { width: 22px; height: 22px; }
+.under { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 4px; color: var(--tx2); font-size: 13px; }
+.under b { color: var(--tx); font: 500 var(--fm) var(--mono); }
+.under:not(:has(> :not([hidden]))) { display: none; }
+.max { margin-left: auto; padding: 0; border: 0; background: none; color: var(--ac); font: 600 13px var(--sans); cursor: pointer; }
+/* the label and value rows of a card */
+.facts { margin: 24px 0; }
+.facts div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--bd2); }
+.facts div:last-child { border-bottom: 1px solid var(--bd2); }
+.facts span:first-child { color: var(--tx2); }
+.facts span:last-child, .facts a { font: 500 var(--fm) var(--mono); text-align: right; overflow-wrap: anywhere; }
+/* the main button, orbitwan.io's blue */
+.btn { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 0; border-radius: 10px; background: var(--brand); color: #FFFFFF; font: 600 15px var(--sans); text-align: center; cursor: pointer; }
+.btn:hover:not(:disabled) { background: var(--brandh); text-decoration: none; }
+.btn:disabled { background: var(--chip); color: var(--tx3); cursor: default; }
+/* a button that leaves for the MetaMask app carries the arrow its data-ne holds */
+.btn.ext::after { content: attr(data-ne); }
+.note { margin: 10px 0 0; font-size: 13px; color: var(--tx2); }
+.note:empty { margin: 0; }
+.note.bad { color: var(--rd); }
+.note.good { color: var(--gn); }
+
+/* ---- xWAN Express: the two desks, side by side on a wide screen ---- */
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 840px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+.cards .card { padding: 28px; }
+.chead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 24px; }
+.chead h1, .chead h2 { font: 600 20px/28px var(--sans); letter-spacing: -.01em; }
+/* the two amounts of a desk, with the arrow between them in the gap */
+.swap { display: flex; flex-direction: column; gap: 8px; }
+.arrow { position: relative; z-index: 1; height: 0; display: flex; align-items: center; justify-content: center; }
+.arrow span { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--bd); background: var(--sf); box-shadow: 0 0 0 4px var(--sf); display: flex; align-items: center; justify-content: center; color: var(--tx2); font: 600 15px/1 var(--sans); }
+@media (max-width: 639px) { .box input, .box output { font-size: 24px; } .cards .card { padding: 20px; } }
+/* under 840 px one desk above the other, 520 px wide with the header beside it, as before DAPPV2 */
+@media (max-width: 839px) { html:has(.cards) { --wd: 568px; } }
+
+/* ---- footer ---- */
+footer { display: flex; justify-content: center; gap: 8px; padding: 8px 16px 32px; }
+footer a { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+footer a:hover { background: var(--chip); }
+footer img { display: block; width: 18px; height: 18px; filter: var(--icon); opacity: .6; }
 footer a:hover img { opacity: 1; }
